@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <h1> main heading </h1>
+    <h2> this is subheading </h2>
+    <p> this is a paragraph</p>
+    <br>
+    <ul>
+        <li> apple</li>
+        <li> Banana</li>
+        <li> Cherry</li>
+
+    </ul>
+    <h2>Simple Database</h2>
+
+  <form id="userForm">
+    <label for="name">Name: </label>
+    <input type="text" id="name" required><br><br>
+    
+    <label for="age">Age: </label>
+    <input type="number" id="age" required><br><br>
+    
+    <button type="submit">Add Record</button>
+  </form>
+
+  <h3>User Records:</h3>
+  <table id="userTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Initialize the database (LocalStorage)
+    if (!localStorage.getItem('users')) {
+      localStorage.setItem('users', JSON.stringify([])); // Initialize an empty array in LocalStorage
+    }
+
+    // Function to render the user records
+    function renderUsers() {
+      const users = JSON.parse(localStorage.getItem('users'));
+      const tbody = document.querySelector('#userTable tbody');
+      tbody.innerHTML = ''; // Clear current table rows
+
+      users.forEach((user, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${user.name}</td>
+          <td>${user.age}</td>
+          <td><button onclick="deleteUser(${index})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Function to add a user to the database (LocalStorage)
+    document.getElementById('userForm').addEventListener('submit', function (event) {
+      event.preventDefault(); // Prevent the form from submitting the traditional way
+
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+
+      // Get existing users from LocalStorage
+      const users = JSON.parse(localStorage.getItem('users'));
+
+      // Add the new user to the array
+      users.push({ name, age });
+
+      // Save the updated users array back to LocalStorage
+      localStorage.setItem('users', JSON.stringify(users));
+
+      // Clear the form
+      document.getElementById('name').value = '';
+      document.getElementById('age').value = '';
+
+      // Re-render the table with the updated data
+      renderUsers();
+    });
+
+    // Function to delete a user from the database (LocalStorage)
+    function deleteUser(index) {
+      const users = JSON.parse(localStorage.getItem('users'));
+
+      // Remove the user at the given index
+      users.splice(index, 1);
+
+      // Save the updated users array back to LocalStorage
+      localStorage.setItem('users', JSON.stringify(users));
+
+      // Re-render the table with the updated data
+      renderUsers();
+    }
+
+    // Initial rendering of users when the page loads
+    renderUsers();
+  </script>
+
+</body>
+</html>
